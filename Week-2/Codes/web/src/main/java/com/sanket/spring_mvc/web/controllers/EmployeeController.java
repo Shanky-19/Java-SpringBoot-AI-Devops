@@ -3,6 +3,7 @@ package com.sanket.spring_mvc.web.controllers;
 import com.sanket.spring_mvc.web.dto.EmployeeDTO;
 import com.sanket.spring_mvc.web.entities.EmployeeEntity;
 import com.sanket.spring_mvc.web.repositories.EmployeeRepository;
+import com.sanket.spring_mvc.web.services.EmployeeService;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
@@ -14,9 +15,9 @@ import java.util.Optional;
 public class EmployeeController {
 
     // contructor ingestion
-    private final EmployeeRepository employeeRepository;
-    public EmployeeController(EmployeeRepository employeeRepository) {
-        this.employeeRepository = employeeRepository;
+    private final EmployeeService employeeService;
+    public EmployeeController(EmployeeService employeeService) {
+        this.employeeService = employeeService;
     }
 
     @GetMapping(path = "/getSecretMessage")
@@ -37,9 +38,9 @@ public class EmployeeController {
 //    }
 
     @GetMapping
-    public List<EmployeeEntity> getAllEmployees(@RequestParam Integer age,
+    public List<EmployeeDTO> getAllEmployees(@RequestParam(required = false) Integer age,
                                                 @RequestParam(required = false) String sortBy) {
-        return employeeRepository.findAll();
+        return employeeService.findAll();
     }
 
     @PostMapping
@@ -59,14 +60,14 @@ public class EmployeeController {
     }
 
     @GetMapping("/v2/{employeeId}")
-    public Optional<EmployeeEntity> getEmployeeById2(@PathVariable(name = "employeeId") Long id) {
+    public EmployeeDTO getEmployeeById2(@PathVariable(name = "employeeId") Long id) {
         // Here jackson is converting my java object (dto) back to json
-        return employeeRepository.findById(id);
+        return employeeService.findById(id);
     }
 
     @PostMapping("/save")
-    public EmployeeEntity saveNewEmployee(@RequestBody EmployeeEntity inputEmployeeEntity) {
-        return employeeRepository.save(inputEmployeeEntity);
+    public EmployeeDTO saveNewEmployee(@RequestBody EmployeeDTO inputEmployeeDTO) {
+        return employeeService.save(inputEmployeeDTO);
     }
 
 }
