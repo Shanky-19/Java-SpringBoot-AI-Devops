@@ -1,13 +1,23 @@
 package com.sanket.spring_mvc.web.controllers;
 
 import com.sanket.spring_mvc.web.dto.EmployeeDTO;
+import com.sanket.spring_mvc.web.entities.EmployeeEntity;
+import com.sanket.spring_mvc.web.repositories.EmployeeRepository;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
+import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping(path = "/employees")
 public class EmployeeController {
+
+    // contructor ingestion
+    private final EmployeeRepository employeeRepository;
+    public EmployeeController(EmployeeRepository employeeRepository) {
+        this.employeeRepository = employeeRepository;
+    }
 
     @GetMapping(path = "/getSecretMessage")
     public String getMySuperSecretMessage() {
@@ -27,9 +37,9 @@ public class EmployeeController {
 //    }
 
     @GetMapping
-    public String getAllEmployees(@RequestParam Integer age,
-                                  @RequestParam(required = false) String sortBy) {
-        return "Hi age : " + age;
+    public List<EmployeeEntity> getAllEmployees(@RequestParam Integer age,
+                                                @RequestParam(required = false) String sortBy) {
+        return employeeRepository.findAll();
     }
 
     @PostMapping
@@ -47,4 +57,16 @@ public class EmployeeController {
     public String updateEmployeeById() {
         return "Hello from put";
     }
+
+    @GetMapping("/v2/{employeeId}")
+    public Optional<EmployeeEntity> getEmployeeById2(@PathVariable(name = "employeeId") Long id) {
+        // Here jackson is converting my java object (dto) back to json
+        return employeeRepository.findById(id);
+    }
+
+    @PostMapping("/save")
+    public EmployeeEntity saveNewEmployee(@RequestBody EmployeeEntity inputEmployeeEntity) {
+        return employeeRepository.save(inputEmployeeEntity);
+    }
+
 }
