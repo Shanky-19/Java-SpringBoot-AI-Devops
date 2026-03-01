@@ -2,6 +2,7 @@ package com.sanket.spring_mvc.web.services;
 
 import com.sanket.spring_mvc.web.dto.EmployeeDTO;
 import com.sanket.spring_mvc.web.entities.EmployeeEntity;
+import com.sanket.spring_mvc.web.exceptions.ResourceNotFoundException;
 import com.sanket.spring_mvc.web.repositories.EmployeeRepository;
 import org.apache.el.util.ReflectionUtil;
 import org.modelmapper.ModelMapper;
@@ -65,7 +66,7 @@ public class EmployeeService {
     public EmployeeDTO updateEmployeeDetails(Long employeeId, Map<String, Object> updates) {
         boolean exists = isExists(employeeId);
         if(!exists) {
-            return null;
+            throw new ResourceNotFoundException("Employee not found with id + " + employeeId);
         }
         EmployeeEntity employeeEntity = employeeRepository.findById(employeeId).get();
         // now to update employee field -> we will use reflection API
