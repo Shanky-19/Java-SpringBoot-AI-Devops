@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @RestController
@@ -54,11 +55,6 @@ public class EmployeeController {
         return inputEmployeeDTO;
     }
 
-    @PutMapping
-    public String updateEmployeeById() {
-        return "Hello from put";
-    }
-
     @GetMapping("/v2/{employeeId}")
     public EmployeeDTO getEmployeeById2(@PathVariable(name = "employeeId") Long id) {
         // Here jackson is converting my java object (dto) back to json
@@ -68,6 +64,27 @@ public class EmployeeController {
     @PostMapping("/save")
     public EmployeeDTO saveNewEmployee(@RequestBody EmployeeDTO inputEmployeeDTO) {
         return employeeService.save(inputEmployeeDTO);
+    }
+
+    // PUT -> When entire existing object needs to be changed/replaced
+    // PATCH -> When few fields in existing object needs to be updated
+
+    @PutMapping(path = "/{employeeId}")
+    public EmployeeDTO updateEmployeeById(@RequestBody EmployeeDTO employeeDTO,
+                                          @PathVariable Long employeeId) {
+
+        return employeeService.updateEmployeeById(employeeId, employeeDTO);
+    }
+
+    @DeleteMapping(path = "/{employeeId}")
+    public boolean deleteEmployeeById(@PathVariable Long employeeId) {
+        return employeeService.deleteEmployeeById(employeeId);
+    }
+
+    @PatchMapping(path = "/{employeeId}")
+    public EmployeeDTO patchEmployeeById(@PathVariable Long employeeId,
+                                  @RequestBody Map<String, Object> updates) {
+        return employeeService.updateEmployeeDetails(employeeId, updates);
     }
 
 }
