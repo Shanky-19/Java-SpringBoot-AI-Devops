@@ -81,4 +81,13 @@ public class EmployeeService {
     private boolean isExists(Long employeeId) {
         return employeeRepository.existsById(employeeId);
     }
+
+    public EmployeeDTO getEmployeeById(Long employeeId) {
+        return mapper.map(employeeRepository.findById(employeeId), EmployeeDTO.class);
+    }
+
+    public EmployeeDTO createNewEmployee(EmployeeDTO inputEmployeeDTO) {
+        EmployeeEntity employeeEntity = mapper.map(inputEmployeeDTO, EmployeeEntity.class);
+        return mapper.map(employeeRepository.save(employeeEntity), EmployeeDTO.class);
+    }
 }
