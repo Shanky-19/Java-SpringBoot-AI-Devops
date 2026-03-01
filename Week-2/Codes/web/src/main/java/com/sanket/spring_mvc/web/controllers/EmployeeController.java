@@ -2,6 +2,7 @@ package com.sanket.spring_mvc.web.controllers;
 
 import com.sanket.spring_mvc.web.dto.EmployeeDTO;
 import com.sanket.spring_mvc.web.services.EmployeeService;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -54,7 +55,7 @@ public class EmployeeController {
     }
 
     @PostMapping("/requestBodyEg")
-    public ResponseEntity<EmployeeDTO> createNewEmployee(@RequestBody EmployeeDTO inputEmployeeDTO) {
+    public ResponseEntity<EmployeeDTO> createNewEmployee(@RequestBody @Valid EmployeeDTO inputEmployeeDTO) {
         EmployeeDTO createdEmployeeDTO = employeeService.createNewEmployee(inputEmployeeDTO);
         return new ResponseEntity<>(createdEmployeeDTO, HttpStatus.CREATED);
     }
@@ -66,7 +67,7 @@ public class EmployeeController {
     }
 
     @PostMapping("/save")
-    public EmployeeDTO saveNewEmployee(@RequestBody EmployeeDTO inputEmployeeDTO) {
+    public EmployeeDTO saveNewEmployee(@RequestBody @Valid EmployeeDTO inputEmployeeDTO) {
         return employeeService.save(inputEmployeeDTO);
     }
 
@@ -74,7 +75,7 @@ public class EmployeeController {
     // PATCH -> When few fields in existing object needs to be updated
 
     @PutMapping(path = "/{employeeId}")
-    public ResponseEntity<EmployeeDTO> updateEmployeeById(@RequestBody EmployeeDTO employeeDTO,
+    public ResponseEntity<EmployeeDTO> updateEmployeeById(@RequestBody @Valid EmployeeDTO employeeDTO,
                                                           @PathVariable Long employeeId) {
 
         return ResponseEntity.ok(employeeService.updateEmployeeById(employeeId, employeeDTO));
