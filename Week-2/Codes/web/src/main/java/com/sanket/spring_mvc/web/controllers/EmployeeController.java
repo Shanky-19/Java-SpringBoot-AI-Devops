@@ -1,6 +1,7 @@
 package com.sanket.spring_mvc.web.controllers;
 
 import com.sanket.spring_mvc.web.dto.EmployeeDTO;
+import com.sanket.spring_mvc.web.exceptions.ResourceNotFoundException;
 import com.sanket.spring_mvc.web.services.EmployeeService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -10,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 @RestController
@@ -38,10 +40,18 @@ public class EmployeeController {
     public ResponseEntity<EmployeeDTO> getEmployeeById(@PathVariable Long employeeId) {
         EmployeeDTO employeeDTO = employeeService.getEmployeeById(employeeId);
         if(employeeDTO == null) {
-            return ResponseEntity.notFound().build();
+            throw new ResourceNotFoundException("Employee not found with id : " + employeeId);
         }
         return ResponseEntity.ok(employeeDTO);
     }
+
+     // Best practice is to add these in Global exception handler
+
+//    @ExceptionHandler(NoSuchElementException.class)
+//    public ResponseEntity<String> handleEmployeeNotFound(NoSuchElementException exception) {
+//        return new ResponseEntity<>("Employee not found", HttpStatus.NOT_FOUND);
+//    }
+
 
     @GetMapping
     public ResponseEntity<List<EmployeeDTO>> getAllEmployees(@RequestParam(required = false) Integer age,
