@@ -1,9 +1,9 @@
 package com.sanket.spring_mvc.web.controllers;
 
 import com.sanket.spring_mvc.web.dto.EmployeeDTO;
-import com.sanket.spring_mvc.web.entities.EmployeeEntity;
-import com.sanket.spring_mvc.web.repositories.EmployeeRepository;
 import com.sanket.spring_mvc.web.services.EmployeeService;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
@@ -26,22 +26,26 @@ public class EmployeeController {
         return "Secret Message : sufnwe35r382hjsf";
     }
 
-    @GetMapping("/{employeeId}")
-    public EmployeeDTO getEmployeeById(@PathVariable(name = "employeeId") Long id) {
-        // Here jackson is converting my java object (dto) back to json
-        // jackson is added when we add dependency of SpringWeb
-        return new EmployeeDTO(id, "Sanket", "sanket@gmail.com", 24, LocalDate.of(2024, 11, 19), true);
-    }
-
 //    @GetMapping("/{employeeId}")
-//    public EmployeeDTO getEmployeeById2(@PathVariable Long employeeId) {
-//        return new EmployeeDTO(employeeId, "Sanket", "sanket@gmail.com", 24, LocalDate.of(2024, 11, 19), true);
+//    public EmployeeDTO getEmployeeById(@PathVariable(name = "employeeId") Long id) {
+//        // Here jackson is converting my java object (dto) back to json
+//        // jackson is added when we add dependency of SpringWeb
+//        return new EmployeeDTO(id, "Sanket", "sanket@gmail.com", 24, LocalDate.of(2024, 11, 19), true);
 //    }
 
+    @GetMapping("/{employeeId}")
+    public ResponseEntity<EmployeeDTO> getEmployeeById(@PathVariable Long employeeId) {
+        EmployeeDTO employeeDTO = employeeService.getEmployeeById(employeeId);
+        if(employeeDTO == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(employeeDTO);
+    }
+
     @GetMapping
-    public List<EmployeeDTO> getAllEmployees(@RequestParam(required = false) Integer age,
+    public ResponseEntity<List<EmployeeDTO>> getAllEmployees(@RequestParam(required = false) Integer age,
                                                 @RequestParam(required = false) String sortBy) {
-        return employeeService.findAll();
+        return ResponseEntity.ok(employeeService.findAll());
     }
 
     @PostMapping
@@ -50,9 +54,9 @@ public class EmployeeController {
     }
 
     @PostMapping("/requestBodyEg")
-    public EmployeeDTO createNewEmployee(@RequestBody EmployeeDTO inputEmployeeDTO) {
-        inputEmployeeDTO.setId(100L);
-        return inputEmployeeDTO;
+    public ResponseEntity<EmployeeDTO> createNewEmployee(@RequestBody EmployeeDTO inputEmployeeDTO) {
+        EmployeeDTO createdEmployeeDTO = employeeService.createNewEmployee(inputEmployeeDTO);
+        return new ResponseEntity<>(createdEmployeeDTO, HttpStatus.CREATED);
     }
 
     @GetMapping("/v2/{employeeId}")
@@ -70,21 +74,29 @@ public class EmployeeController {
     // PATCH -> When few fields in existing object needs to be updated
 
     @PutMapping(path = "/{employeeId}")
-    public EmployeeDTO updateEmployeeById(@RequestBody EmployeeDTO employeeDTO,
-                                          @PathVariable Long employeeId) {
+    public ResponseEntity<EmployeeDTO> updateEmployeeById(@RequestBody EmployeeDTO employeeDTO,
+                                                          @PathVariable Long employeeId) {
 
-        return employeeService.updateEmployeeById(employeeId, employeeDTO);
+        return ResponseEntity.ok(employeeService.updateEmployeeById(employeeId, employeeDTO));
     }
 
     @DeleteMapping(path = "/{employeeId}")
-    public boolean deleteEmployeeById(@PathVariable Long employeeId) {
-        return employeeService.deleteEmployeeById(employeeId);
+    public ResponseEntity<Boolean> deleteEmployeeById(@PathVariable Long employeeId) {
+        boolean deleted = employeeService.deleteEmployeeById(employeeId);
+        if(deleted) {
+            return ResponseEntity.ok(true);
+        }
+        return ResponseEntity.notFound().build();
     }
 
     @PatchMapping(path = "/{employeeId}")
-    public EmployeeDTO patchEmployeeById(@PathVariable Long employeeId,
+    public ResponseEntity<EmployeeDTO> patchEmployeeById(@PathVariable Long employeeId,
                                   @RequestBody Map<String, Object> updates) {
-        return employeeService.updateEmployeeDetails(employeeId, updates);
+        EmployeeDTO employeeDTO = employeeService.updateEmployeeDetails(employeeId, updates);
+        if(employeeDTO == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(employeeDTO);
     }
 
 }
